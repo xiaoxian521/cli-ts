@@ -11,6 +11,6 @@ export const init = async (name: string): Promise<any>  => {
     log(data)
     const remote = "https://gitee.com/yiming_chang/CURD-TS.git"
     // log(`开始创建项目:` + name)
-    console.log('--', name)
-    await clone(remote, name)
+    console.log('=======>', name)
+    await clone(remote, ["doc", "-b"])
 }

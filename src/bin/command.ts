@@ -5,6 +5,11 @@ import { SyncFile } from '../libs/file'
 import { init } from '../libs/index'
 program.version(require('../package.json').version)
 
+// 在 node process 中有一个 unhandledRejection 事件，当没有对 Promise 的 rejection 进行处理就会抛出这个事件（这只对原生 Promise 有效）
+process.on('unhandledRejection', error => {
+  console.error('unhandledRejection', error)
+});
+
 const list: Array<string> = glob.sync('*') // 遍历当前目录
 
 // 初始化项目
@@ -30,7 +35,9 @@ inquirer.prompt([{
         .description('create project template...')
         .action(async (name: any, cmd: any) => {
           // @ts-ignore
-          init(...projects)
+          projects.forEach((v:string) => {
+            init(v)
+          })
         })
 
       program.parse(process.argv)

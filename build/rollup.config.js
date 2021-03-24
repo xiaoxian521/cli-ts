@@ -1,13 +1,13 @@
-const path = require('path');
-const typescript = require('rollup-plugin-typescript2');
+const path = require('path')
+const typescript = require('rollup-plugin-typescript2')
 const buble = require("rollup-plugin-buble")
 const babel = require("rollup-plugin-babel")
-const resolve = require("rollup-plugin-node-resolve")
+const nodeResolve = require("rollup-plugin-node-resolve")
 const commonjs = require("rollup-plugin-commonjs")
 const json = require('rollup-plugin-json')
 const nodePolyfills = require('rollup-plugin-node-polyfills')
 
-const resolveFile = function(filePath) {
+const resolveFile = function (filePath) {
   return path.join(__dirname, '..', filePath)
 }
 
@@ -19,23 +19,30 @@ module.exports = [
       format: 'umd',
       name: "init",
       //通知系统用 node 运行
-      banner: '#!/usr/bin/env node' 
-    }, 
+      banner: '#!/usr/bin/env node'
+    },
     plugins: [
       typescript({
         exclude: 'node_modules/**',
         useTsconfigDeclarationDir: false
       }),
-      resolve({
-        browser: false,
-      }),
       json(),
       commonjs(),
       babel({
-        babelrc: true,
-        presets: [['env', { modules: false }]],
+        exclude: 'node_modules/**', // 防止打包node_modules下的文件
+        runtimeHelpers: true,       // 使plugin-transform-runtime生效
       }),
-      buble(),
+      buble({
+        transforms: {
+          dangerousForOf: true,
+          generator: false
+        }
+      }),
+      nodeResolve({
+        preferBuiltins: true,
+        jsnext: true,
+        main: true
+      }),
       nodePolyfills()
     ],
   },
